@@ -1,5 +1,6 @@
 using System.Text;
 using System.Text.Json.Serialization;
+using ExpenseTracker.API.Middleware;
 using ExpenseTracker.Models.Models;
 using ExpenseTracker.Repository.Implementation;
 using ExpenseTracker.Repository.Interface;
@@ -111,6 +112,8 @@ builder.Services.AddSwaggerGen(c =>
 
 
 var app = builder.Build();
+
+app.UseMiddleware<ExceptionHandlingMiddleware>();
 
 app.UseAuthentication();
 app.UseAuthorization();

@@ -33,7 +33,7 @@ public class ExceptionHandlingMiddleware
                 Message = "An unexpected error occurred.",
                 StatusCode = context.Response.StatusCode,
                 Succeeded = false,
-                Errors = new[] { ex.Message } // Remove in production to avoid exposing sensitive data
+                Errors = new[] { ex.Message }
             };
 
             var json = JsonSerializer.Serialize(response);

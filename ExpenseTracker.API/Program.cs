@@ -1,7 +1,6 @@
 using System.Text;
 using System.Text.Json.Serialization;
 using ExpenseTracker.API.Middleware;
-using ExpenseTracker.Models.Models;
 using ExpenseTracker.Repository.Implementation;
 using ExpenseTracker.Repository.Interface;
 using ExpenseTracker.Service.Implementation;
@@ -11,9 +10,19 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using Serilog;
 using Swashbuckle.AspNetCore.SwaggerGen;
 
 var builder = WebApplication.CreateBuilder(args);
+
+// Configure Serilog
+Log.Logger = new LoggerConfiguration()
+    .WriteTo.Console()
+    .WriteTo.File("Logs/log-.txt", rollingInterval: RollingInterval.Day) // <- File logging here
+    .CreateLogger();
+
+builder.Host.UseSerilog(); // Replace default logger
+
 
 builder.Services.AddScoped<JwtService>();
 
@@ -30,6 +39,7 @@ builder.Services.AddScoped<IReportService, ReportService>();
 builder.Services.AddScoped<IDashboardService, DashboardService>();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IExpenseReportRepository, ExpenseReportRepository>();
+
 
 builder.Services.AddControllers()
     .AddJsonOptions(options =>

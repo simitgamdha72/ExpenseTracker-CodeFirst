@@ -145,7 +145,7 @@ public class ExpenseCategoriesService : IExpenseCategoriesService
             await _expenseCategoryRepository.AddAsync(category);
             await _expenseCategoryRepository.SaveChangesAsync();
 
-            _logger.LogInformation("Expense category created successfully with ID: {CategoryId}", category.Id);
+            _logger.LogInformation("Expense category created successfully with ID: {CategoryId}", category);
 
             return new Response<object>
             {

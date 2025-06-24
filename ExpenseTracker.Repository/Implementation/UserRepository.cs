@@ -36,7 +36,7 @@ public class UserRepository : Repository<User>, IUserRepository
                 Firstname = u.Firstname,
                 Lastname = u.Lastname,
                 Contactnumber = u.Contactnumber,
-                Address = u.Address,
+                Address = u.Addres,
                 RoleName = u.Role.Name
             })
             .FirstOrDefaultAsync();

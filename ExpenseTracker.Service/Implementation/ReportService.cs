@@ -36,14 +36,16 @@ public class ReportService : IReportService
             {
                 _logger.LogWarning("Unauthorized access attempt to export CSV.");
 
-                Response<object> response = new Response<object>
-                {
-                    Message = ErrorMessages.UnauthorizedAccess,
-                    Succeeded = false,
-                    StatusCode = (int)HttpStatusCode.Unauthorized,
-                    Errors = new[] { ErrorMessages.UserNotFound }
-                };
-                return (new MemoryStream(), response);
+                // Response<object> response = new Response<object>
+                // {
+                //     Message = ErrorMessages.UnauthorizedAccess,
+                //     Succeeded = false,
+                //     StatusCode = (int)HttpStatusCode.Unauthorized,
+                //     Errors = new[] { ErrorMessages.UserNotFound }
+                // };
+                // return (new MemoryStream(), response);
+
+                return (new MemoryStream(), ResponseHelper.Error(ErrorMessages.UnauthorizedAccess, ErrorMessages.UserNotFound, HttpStatusCode.Unauthorized))!;
             }
 
             int userId = int.TryParse(user.FindFirstValue(ClaimTypes.NameIdentifier), out int id) ? id : 0;
@@ -52,14 +54,16 @@ public class ReportService : IReportService
             {
                 _logger.LogWarning("Failed to parse user ID from claims.");
 
-                Response<object> response = new Response<object>
-                {
-                    Message = ErrorMessages.UnauthorizedAccess,
-                    Succeeded = false,
-                    StatusCode = (int)HttpStatusCode.Unauthorized,
-                    Errors = new[] { ErrorMessages.UserNotFound }
-                };
-                return (new MemoryStream(), response);
+                // Response<object> response = new Response<object>
+                // {
+                //     Message = ErrorMessages.UnauthorizedAccess,
+                //     Succeeded = false,
+                //     StatusCode = (int)HttpStatusCode.Unauthorized,
+                //     Errors = new[] { ErrorMessages.UserNotFound }
+                // };
+                // return (new MemoryStream(), response);
+
+                return (new MemoryStream(), ResponseHelper.Error(ErrorMessages.UnauthorizedAccess, ErrorMessages.UserNotFound, HttpStatusCode.Unauthorized))!;
             }
 
             DateOnly today = DateOnly.FromDateTime(DateTime.Today);
@@ -71,24 +75,38 @@ public class ReportService : IReportService
                 {
                     _logger.LogWarning("Date filter contains future dates.");
 
-                    return (new MemoryStream(), new Response<object>
-                    {
-                        Succeeded = false,
-                        StatusCode = (int)HttpStatusCode.BadRequest,
-                        Errors = new[] { ErrorMessages.FutureDateNotAllowed }
-                    });
+                    // return (new MemoryStream(), new Response<object>
+                    // {
+                    //     Succeeded = false,
+                    //     StatusCode = (int)HttpStatusCode.BadRequest,
+                    //     Errors = new[] { ErrorMessages.FutureDateNotAllowed }
+                    // });
+
+                    return (new MemoryStream(), ResponseHelper.Error(
+    ErrorMessages.FutureDateNotAllowed,
+    ErrorMessages.FutureDateNotAllowed,
+    HttpStatusCode.BadRequest
+))!;
+
                 }
 
                 if (filterDto.StartDate > filterDto.EndDate)
                 {
                     _logger.LogWarning("Start date is after end date.");
 
-                    return (new MemoryStream(), new Response<object>
-                    {
-                        Succeeded = false,
-                        StatusCode = (int)HttpStatusCode.BadRequest,
-                        Errors = new[] { ErrorMessages.StartDateAfterEndDate }
-                    });
+                    // return (new MemoryStream(), new Response<object>
+                    // {
+                    //     Succeeded = false,
+                    //     StatusCode = (int)HttpStatusCode.BadRequest,
+                    //     Errors = new[] { ErrorMessages.StartDateAfterEndDate }
+                    // });
+
+                    return (new MemoryStream(), ResponseHelper.Error(
+    ErrorMessages.StartDateAfterEndDate,
+    ErrorMessages.StartDateAfterEndDate,
+    HttpStatusCode.BadRequest
+))!;
+
                 }
             }
 
@@ -106,48 +124,78 @@ public class ReportService : IReportService
                     {
                         _logger.LogWarning("Start month is in the future.");
 
-                        return (new MemoryStream(), new Response<object>
-                        {
-                            Succeeded = false,
-                            StatusCode = (int)HttpStatusCode.BadRequest,
-                            Errors = new[] { ErrorMessages.FutureMonthNotAllowed }
-                        });
+                        // return (new MemoryStream(), new Response<object>
+                        // {
+                        //     Succeeded = false,
+                        //     StatusCode = (int)HttpStatusCode.BadRequest,
+                        //     Errors = new[] { ErrorMessages.FutureMonthNotAllowed }
+                        // });
+
+                        return (new MemoryStream(), ResponseHelper.Error(
+    ErrorMessages.FutureMonthNotAllowed,
+    ErrorMessages.FutureMonthNotAllowed,
+    HttpStatusCode.BadRequest
+))!;
+
+
                     }
 
                     if (end > today)
                     {
                         _logger.LogWarning("End month is in the future.");
 
-                        return (new MemoryStream(), new Response<object>
-                        {
-                            Succeeded = false,
-                            StatusCode = (int)HttpStatusCode.BadRequest,
-                            Errors = new[] { ErrorMessages.EndMonthInFuture }
-                        });
+                        // return (new MemoryStream(), new Response<object>
+                        // {
+                        //     Succeeded = false,
+                        //     StatusCode = (int)HttpStatusCode.BadRequest,
+                        //     Errors = new[] { ErrorMessages.EndMonthInFuture }
+                        // });
+
+                        return (new MemoryStream(), ResponseHelper.Error(
+    ErrorMessages.EndMonthInFuture,
+    ErrorMessages.EndMonthInFuture,
+    HttpStatusCode.BadRequest
+))!;
+
                     }
 
                     if (start > end)
                     {
                         _logger.LogWarning("Start month is after end month.");
 
-                        return (new MemoryStream(), new Response<object>
-                        {
-                            Succeeded = false,
-                            StatusCode = (int)HttpStatusCode.BadRequest,
-                            Errors = new[] { ErrorMessages.StartMonthAfterEndMonth }
-                        });
+                        // return (new MemoryStream(), new Response<object>
+                        // {
+                        //     Succeeded = false,
+                        //     StatusCode = (int)HttpStatusCode.BadRequest,
+                        //     Errors = new[] { ErrorMessages.StartMonthAfterEndMonth }
+                        // });
+
+                        return (new MemoryStream(), ResponseHelper.Error(
+    ErrorMessages.StartMonthAfterEndMonth,
+    ErrorMessages.StartMonthAfterEndMonth,
+    HttpStatusCode.BadRequest
+))!;
+
+
                     }
                 }
                 else
                 {
                     _logger.LogWarning("Custom month range is incomplete.");
 
-                    return (new MemoryStream(), new Response<object>
-                    {
-                        Succeeded = false,
-                        StatusCode = (int)HttpStatusCode.BadRequest,
-                        Errors = new[] { ErrorMessages.CustomMonthRangeRequired }
-                    });
+                    // return (new MemoryStream(), new Response<object>
+                    // {
+                    //     Succeeded = false,
+                    //     StatusCode = (int)HttpStatusCode.BadRequest,
+                    //     Errors = new[] { ErrorMessages.CustomMonthRangeRequired }
+                    // });
+
+                    return (new MemoryStream(), ResponseHelper.Error(
+    ErrorMessages.CustomMonthRangeRequired,
+    ErrorMessages.CustomMonthRangeRequired,
+    HttpStatusCode.BadRequest
+))!;
+
                 }
             }
 
@@ -202,24 +250,38 @@ public class ReportService : IReportService
 
             MemoryStream? fileStream = new MemoryStream(Encoding.UTF8.GetBytes(csv.ToString()));
 
-            return (fileStream, new Response<object>
-            {
-                Succeeded = true,
-                StatusCode = (int)HttpStatusCode.OK
-            });
+            // return (fileStream, new Response<object>
+            // {
+            //     Succeeded = true,
+            //     StatusCode = (int)HttpStatusCode.OK
+            // });
+
+            return (fileStream, ResponseHelper.Success<object>(
+    null,
+    SuccessMessages.CsvExportSuccessful,
+    HttpStatusCode.OK
+));
+
 
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Failed to export CSV for user");
 
-            return (new MemoryStream(), new Response<object>
-            {
-                Message = ErrorMessages.ExportCsvFailed,
-                Succeeded = false,
-                StatusCode = (int)HttpStatusCode.InternalServerError,
-                Errors = new[] { ex.Message }
-            });
+            // return (new MemoryStream(), new Response<object>
+            // {
+            //     Message = ErrorMessages.ExportCsvFailed,
+            //     Succeeded = false,
+            //     StatusCode = (int)HttpStatusCode.InternalServerError,
+            //     Errors = new[] { ex.Message }
+            // });
+
+            return (new MemoryStream(), ResponseHelper.Error(
+    ErrorMessages.ExportCsvFailed,
+    ex.Message,
+    HttpStatusCode.InternalServerError
+))!;
+
         }
 
     }
@@ -239,13 +301,20 @@ public class ReportService : IReportService
             {
                 _logger.LogWarning("Unauthenticated request to summary report.");
 
-                return new Response<object>
-                {
-                    Message = ErrorMessages.UnauthorizedAccess,
-                    Succeeded = false,
-                    StatusCode = (int)HttpStatusCode.Unauthorized,
-                    Errors = new[] { ErrorMessages.UserNotFound }
-                };
+                // return new Response<object>
+                // {
+                //     Message = ErrorMessages.UnauthorizedAccess,
+                //     Succeeded = false,
+                //     StatusCode = (int)HttpStatusCode.Unauthorized,
+                //     Errors = new[] { ErrorMessages.UserNotFound }
+                // };
+
+                return ResponseHelper.Error(
+    ErrorMessages.UnauthorizedAccess,
+    ErrorMessages.UserNotFound,
+    HttpStatusCode.Unauthorized
+)!;
+
             }
 
             int userId = int.TryParse(user.FindFirstValue(ClaimTypes.NameIdentifier), out int id) ? id : 0;
@@ -254,13 +323,20 @@ public class ReportService : IReportService
             {
                 _logger.LogWarning("Invalid user ID found in claims.");
 
-                return new Response<object>
-                {
-                    Message = ErrorMessages.UnauthorizedAccess,
-                    Succeeded = false,
-                    StatusCode = (int)HttpStatusCode.Unauthorized,
-                    Errors = new[] { ErrorMessages.UserNotFound }
-                };
+                // return new Response<object>
+                // {
+                //     Message = ErrorMessages.UnauthorizedAccess,
+                //     Succeeded = false,
+                //     StatusCode = (int)HttpStatusCode.Unauthorized,
+                //     Errors = new[] { ErrorMessages.UserNotFound }
+                // };
+
+                return ResponseHelper.Error(
+    ErrorMessages.UnauthorizedAccess,
+    ErrorMessages.UserNotFound,
+    HttpStatusCode.Unauthorized
+)!;
+
             }
 
             DateOnly today = DateOnly.FromDateTime(DateTime.Today);
@@ -271,24 +347,38 @@ public class ReportService : IReportService
                 {
                     _logger.LogWarning("Daily summary request has future dates.");
 
-                    return new Response<object>
-                    {
-                        Succeeded = false,
-                        StatusCode = (int)HttpStatusCode.BadRequest,
-                        Errors = new[] { ErrorMessages.FutureDateNotAllowed }
-                    };
+                    // return new Response<object>
+                    // {
+                    //     Succeeded = false,
+                    //     StatusCode = (int)HttpStatusCode.BadRequest,
+                    //     Errors = new[] { ErrorMessages.FutureDateNotAllowed }
+                    // };
+
+                    return ResponseHelper.Error(
+    ErrorMessages.FutureDateNotAllowed,
+    ErrorMessages.FutureDateNotAllowed,
+    HttpStatusCode.BadRequest
+)!;
+
                 }
 
                 if (filterDto.StartDate > filterDto.EndDate)
                 {
                     _logger.LogWarning("Start date is after end date in daily summary request.");
 
-                    return new Response<object>
-                    {
-                        Succeeded = false,
-                        StatusCode = (int)HttpStatusCode.BadRequest,
-                        Errors = new[] { ErrorMessages.StartDateAfterEndDate }
-                    };
+                    // return new Response<object>
+                    // {
+                    //     Succeeded = false,
+                    //     StatusCode = (int)HttpStatusCode.BadRequest,
+                    //     Errors = new[] { ErrorMessages.StartDateAfterEndDate }
+                    // };
+
+                    return ResponseHelper.Error(
+    ErrorMessages.StartDateAfterEndDate,
+    ErrorMessages.StartDateAfterEndDate,
+    HttpStatusCode.BadRequest
+)!;
+
                 }
             }
 
@@ -305,46 +395,72 @@ public class ReportService : IReportService
                     {
                         _logger.LogWarning("Start month is in the future.");
 
-                        return new Response<object>
-                        {
-                            Succeeded = false,
-                            StatusCode = (int)HttpStatusCode.BadRequest,
-                            Errors = new[] { ErrorMessages.FutureMonthNotAllowed }
-                        };
+                        // return new Response<object>
+                        // {
+                        //     Succeeded = false,
+                        //     StatusCode = (int)HttpStatusCode.BadRequest,
+                        //     Errors = new[] { ErrorMessages.FutureMonthNotAllowed }
+                        // };
+                        return ResponseHelper.Error(
+    ErrorMessages.FutureMonthNotAllowed,
+    ErrorMessages.FutureMonthNotAllowed,
+    HttpStatusCode.BadRequest
+)!;
+
                     }
                     if (end.Year > today.Year || (end.Year == today.Year && end.Month > today.Month))
                     {
                         _logger.LogWarning("End month is in the future.");
 
-                        return new Response<object>
-                        {
-                            Succeeded = false,
-                            StatusCode = (int)HttpStatusCode.BadRequest,
-                            Errors = new[] { ErrorMessages.EndMonthInFuture }
-                        };
+                        // return new Response<object>
+                        // {
+                        //     Succeeded = false,
+                        //     StatusCode = (int)HttpStatusCode.BadRequest,
+                        //     Errors = new[] { ErrorMessages.EndMonthInFuture }
+                        // };
+
+                        return ResponseHelper.Error(
+    ErrorMessages.EndMonthInFuture,
+    ErrorMessages.EndMonthInFuture,
+    HttpStatusCode.BadRequest
+)!;
                     }
                     if (start > end)
                     {
                         _logger.LogWarning("Start month is after end month.");
 
-                        return new Response<object>
-                        {
-                            Succeeded = false,
-                            StatusCode = (int)HttpStatusCode.BadRequest,
-                            Errors = new[] { ErrorMessages.StartMonthAfterEndMonth }
-                        };
+                        // return new Response<object>
+                        // {
+                        //     Succeeded = false,
+                        //     StatusCode = (int)HttpStatusCode.BadRequest,
+                        //     Errors = new[] { ErrorMessages.StartMonthAfterEndMonth }
+                        // };
+
+                        return ResponseHelper.Error(
+    ErrorMessages.StartMonthAfterEndMonth,
+    ErrorMessages.StartMonthAfterEndMonth,
+    HttpStatusCode.BadRequest
+)!;
+
                     }
                 }
                 else
                 {
                     _logger.LogWarning("Custom month range required but not provided.");
 
-                    return new Response<object>
-                    {
-                        Succeeded = false,
-                        StatusCode = (int)HttpStatusCode.BadRequest,
-                        Errors = new[] { ErrorMessages.CustomMonthRangeRequired }
-                    };
+                    // return new Response<object>
+                    // {
+                    //     Succeeded = false,
+                    //     StatusCode = (int)HttpStatusCode.BadRequest,
+                    //     Errors = new[] { ErrorMessages.CustomMonthRangeRequired }
+                    // };
+
+                    return ResponseHelper.Error(
+    ErrorMessages.CustomMonthRangeRequired,
+    ErrorMessages.CustomMonthRangeRequired,
+    HttpStatusCode.BadRequest
+)!;
+
                 }
             }
 
@@ -374,31 +490,42 @@ public class ReportService : IReportService
 
             _logger.LogInformation("Summary generation successful for userId {UserId}. Total: {Total}", userId, totalExpense);
 
-            return new Response<object>
-            {
-                Message = SuccessMessages.SummaryDataFetched,
-                Succeeded = true,
-                StatusCode = (int)HttpStatusCode.OK,
-                Data = new
-                {
-                    Categories = groupedByCategory,
-                    TotalExpense = totalExpense
-                }
-            };
+            // return new Response<object>
+            // {
+            //     Message = SuccessMessages.SummaryDataFetched,
+            //     Succeeded = true,
+            //     StatusCode = (int)HttpStatusCode.OK,
+            //     Data = new
+            //     {
+            //         Categories = groupedByCategory,
+            //         TotalExpense = totalExpense
+            //     }
+            // };
+
+            return ResponseHelper.Success<object>(
+    new
+    {
+        Categories = groupedByCategory,
+        TotalExpense = totalExpense
+    },
+    SuccessMessages.SummaryDataFetched
+);
 
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error occurred while generating summary report for user.");
 
-            return new Response<object>
-            {
-                Message = ErrorMessages.GetSummaryFailed,
-                Succeeded = false,
-                StatusCode = (int)HttpStatusCode.InternalServerError,
-                Data = null,
-                Errors = new[] { ex.Message }
-            };
+            // return new Response<object>
+            // {
+            //     Message = ErrorMessages.GetSummaryFailed,
+            //     Succeeded = false,
+            //     StatusCode = (int)HttpStatusCode.InternalServerError,
+            //     Data = null,
+            //     Errors = new[] { ex.Message }
+            // };
+
+            return ResponseHelper.Error(ErrorMessages.GetSummaryFailed, ex.Message, HttpStatusCode.InternalServerError)!;
 
         }
     }

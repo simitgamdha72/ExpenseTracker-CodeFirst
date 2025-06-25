@@ -36,9 +36,9 @@ public class AuthService : IAuthService
             _logger.LogWarning("Login failed for email: {Email} - Invalid credentials", loginRequestDto.Email);
 
             return ResponseHelper.Error(
-          message: ErrorMessages.InvalidCredentials,
-          statusCode: HttpStatusCode.BadRequest
-      );
+                message: ErrorMessages.InvalidCredentials,
+                statusCode: HttpStatusCode.BadRequest
+            );
         }
 
         // Generate JWT token
@@ -63,10 +63,9 @@ public class AuthService : IAuthService
             _logger.LogWarning("Registration failed: Invalid role ({RoleId}) for email: {Email}", registerRequestDto.RoleId, registerRequestDto.Email);
 
             return ResponseHelper.Error(
-    message: ErrorMessages.InvalidRole,
-    statusCode: HttpStatusCode.BadRequest
-);
-
+                message: ErrorMessages.InvalidRole,
+                statusCode: HttpStatusCode.BadRequest
+            );
         }
 
         // Check if user exists
@@ -76,9 +75,9 @@ public class AuthService : IAuthService
             _logger.LogWarning("Registration failed: Email or username already exists - Email: {Email}, Username: {Username}", registerRequestDto.Email, registerRequestDto.Username);
 
             return ResponseHelper.Error(
-    message: ErrorMessages.EmailOrUsernameExists,
-    statusCode: HttpStatusCode.Conflict
-);
+             message: ErrorMessages.EmailOrUsernameExists,
+             statusCode: HttpStatusCode.Conflict
+            );
         }
 
         // Create user

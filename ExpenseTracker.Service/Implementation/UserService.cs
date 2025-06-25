@@ -28,13 +28,20 @@ public class UserService : IUserService
             {
                 _logger.LogWarning("Unauthorized access attempt to GetUserProfile.");
 
-                return new Response<object>
-                {
-                    Message = ErrorMessages.UnauthorizedAccess,
-                    Succeeded = false,
-                    StatusCode = (int)HttpStatusCode.NotFound,
-                    Errors = new[] { ErrorMessages.UserNotFound }
-                };
+                // return new Response<object>
+                // {
+                //     Message = ErrorMessages.UnauthorizedAccess,
+                //     Succeeded = false,
+                //     StatusCode = (int)HttpStatusCode.NotFound,
+                //     Errors = new[] { ErrorMessages.UserNotFound }
+                // };
+
+                return ResponseHelper.Error(
+    ErrorMessages.UnauthorizedAccess,
+    ErrorMessages.UserNotFound,
+    HttpStatusCode.Unauthorized
+)!;
+
             }
 
             int userId = int.Parse(user.FindFirstValue(ClaimTypes.NameIdentifier) ?? "0");
@@ -43,13 +50,20 @@ public class UserService : IUserService
             {
                 _logger.LogWarning("User ID parsing failed or is 0 in GetUserProfile.");
 
-                return new Response<object>
-                {
-                    Message = ErrorMessages.UnauthorizedAccess,
-                    Succeeded = false,
-                    StatusCode = (int)HttpStatusCode.NotFound,
-                    Errors = new[] { ErrorMessages.UserNotFound }
-                };
+                // return new Response<object>
+                // {
+                //     Message = ErrorMessages.UnauthorizedAccess,
+                //     Succeeded = false,
+                //     StatusCode = (int)HttpStatusCode.NotFound,
+                //     Errors = new[] { ErrorMessages.UserNotFound }
+                // };
+
+                return ResponseHelper.Error(
+   ErrorMessages.UnauthorizedAccess,
+   ErrorMessages.UserNotFound,
+   HttpStatusCode.Unauthorized
+)!;
+
             }
 
             UserProfileResponseDto? profile = await _userRepository.GetByIdAsync(userId);
@@ -58,36 +72,49 @@ public class UserService : IUserService
             {
                 _logger.LogWarning("User profile not found. UserId: {UserId}", userId);
 
-                return new Response<object>
-                {
-                    Message = ErrorMessages.UnauthorizedAccess,
-                    Succeeded = false,
-                    StatusCode = (int)HttpStatusCode.NotFound,
-                    Errors = new[] { ErrorMessages.UserNotFound }
-                };
+                // return new Response<object>
+                // {
+                //     Message = ErrorMessages.UnauthorizedAccess,
+                //     Succeeded = false,
+                //     StatusCode = (int)HttpStatusCode.NotFound,
+                //     Errors = new[] { ErrorMessages.UserNotFound }
+                // };
+
+                return ResponseHelper.Error(
+   ErrorMessages.UnauthorizedAccess,
+   ErrorMessages.UserNotFound,
+   HttpStatusCode.Unauthorized
+)!;
+
             }
 
             _logger.LogInformation("User profile fetched successfully. UserId: {UserId}", userId);
 
-            return new Response<object>
-            {
-                Message = SuccessMessages.ProfileFetched,
-                Succeeded = true,
-                StatusCode = (int)HttpStatusCode.OK,
-                Data = profile
-            };
+            // return new Response<object>
+            // {
+            //     Message = SuccessMessages.ProfileFetched,
+            //     Succeeded = true,
+            //     StatusCode = (int)HttpStatusCode.OK,
+            //     Data = profile
+            // };
+
+            return ResponseHelper.Success<object>(profile, SuccessMessages.ProfileFetched);
+
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Exception occurred in GetUserProfileAsync.");
 
-            return new Response<object>
-            {
-                Message = ErrorMessages.InternalServerError,
-                Succeeded = false,
-                StatusCode = (int)HttpStatusCode.InternalServerError,
-                Errors = new[] { ex.Message }
-            };
+            // return new Response<object>
+            // {
+            //     Message = ErrorMessages.InternalServerError,
+            //     Succeeded = false,
+            //     StatusCode = (int)HttpStatusCode.InternalServerError,
+            //     Errors = new[] { ex.Message }
+            // };
+
+            return ResponseHelper.Error(ErrorMessages.InternalServerError, ex.Message, HttpStatusCode.InternalServerError)!;
+
         }
     }
 

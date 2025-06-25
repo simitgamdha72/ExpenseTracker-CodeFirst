@@ -37,26 +37,32 @@ public class ExpenseCategoriesService : IExpenseCategoriesService
 
             _logger.LogInformation("Fetched {Count} expense categories successfully.", dtoList.Count());
 
-            return new Response<object>
-            {
-                Message = SuccessMessages.CategoriesFetched,
-                Succeeded = true,
-                StatusCode = (int)HttpStatusCode.OK,
-                Data = dtoList
-            };
+            // return new Response<object>
+            // {
+            //     Message = SuccessMessages.CategoriesFetched,
+            //     Succeeded = true,
+            //     StatusCode = (int)HttpStatusCode.OK,
+            //     Data = dtoList
+            // };
+
+            return ResponseHelper.Success<object>(dtoList, SuccessMessages.CategoriesFetched);
+
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "An error occurred while fetching expense categories.");
 
-            return new Response<object>
-            {
-                Message = ErrorMessages.InternalServerError,
-                Succeeded = false,
-                StatusCode = (int)HttpStatusCode.InternalServerError,
-                Data = null,
-                Errors = new[] { ex.Message }
-            };
+            // return new Response<object>
+            // {
+            //     Message = ErrorMessages.InternalServerError,
+            //     Succeeded = false,
+            //     StatusCode = (int)HttpStatusCode.InternalServerError,
+            //     Data = null,
+            //     Errors = new[] { ex.Message }
+            // };
+
+            return ResponseHelper.Error(ErrorMessages.InternalServerError, ex.Message, HttpStatusCode.InternalServerError)!;
+
         }
     }
 
@@ -72,13 +78,20 @@ public class ExpenseCategoriesService : IExpenseCategoriesService
             {
                 _logger.LogWarning("Expense category not found for ID: {CategoryId}", id);
 
-                return new Response<object>
-                {
-                    Succeeded = false,
-                    StatusCode = (int)HttpStatusCode.NotFound,
-                    Data = null,
-                    Errors = new[] { ErrorMessages.NotFound }
-                };
+                // return new Response<object>
+                // {
+                //     Succeeded = false,
+                //     StatusCode = (int)HttpStatusCode.NotFound,
+                //     Data = null,
+                //     Errors = new[] { ErrorMessages.NotFound }
+                // };
+
+                return ResponseHelper.Error(
+               ErrorMessages.NotFound,
+               ErrorMessages.NotFound,
+               HttpStatusCode.NotFound
+           )!;
+
             }
 
             ExpenseCategoryDto? dto = new ExpenseCategoryDto
@@ -90,26 +103,34 @@ public class ExpenseCategoriesService : IExpenseCategoriesService
 
             _logger.LogInformation("Successfully fetched category: {CategoryName} (ID: {CategoryId})", category.Name, category.Id);
 
-            return new Response<object>
-            {
-                Message = SuccessMessages.CategoryFetched,
-                Succeeded = true,
-                StatusCode = (int)HttpStatusCode.OK,
-                Data = dto
-            };
+            // return new Response<object>
+            // {
+            //     Message = SuccessMessages.CategoryFetched,
+            //     Succeeded = true,
+            //     StatusCode = (int)HttpStatusCode.OK,
+            //     Data = dto
+            // };
+
+            return ResponseHelper.Success<object>(dto, SuccessMessages.CategoryFetched);
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "An error occurred while fetching category with ID: {CategoryId}", id);
 
-            return new Response<object>
-            {
-                Message = ErrorMessages.InternalServerError,
-                Succeeded = false,
-                StatusCode = (int)HttpStatusCode.InternalServerError,
-                Data = null,
-                Errors = new[] { ex.Message }
-            };
+            // return new Response<object>
+            // {
+            //     Message = ErrorMessages.InternalServerError,
+            //     Succeeded = false,
+            //     StatusCode = (int)HttpStatusCode.InternalServerError,
+            //     Data = null,
+            //     Errors = new[] { ex.Message }
+            // };
+
+            return ResponseHelper.Error(
+          ErrorMessages.InternalServerError,
+          ex.Message,
+          HttpStatusCode.InternalServerError
+      )!;
         }
     }
 
@@ -124,14 +145,21 @@ public class ExpenseCategoriesService : IExpenseCategoriesService
             {
                 _logger.LogWarning("Category creation failed: Category name already exists - {CategoryName}", expenseCategoryDto.Name);
 
-                return new Response<object>
-                {
-                    Message = ErrorMessages.CategoryNameExists,
-                    Succeeded = false,
-                    StatusCode = (int)HttpStatusCode.Conflict,
-                    Errors = new[] { ErrorMessages.CategoryNameExists },
-                    Data = null
-                };
+                // return new Response<object>
+                // {
+                //     Message = ErrorMessages.CategoryNameExists,
+                //     Succeeded = false,
+                //     StatusCode = (int)HttpStatusCode.Conflict,
+                //     Errors = new[] { ErrorMessages.CategoryNameExists },
+                //     Data = null
+                // };
+
+                return ResponseHelper.Error(
+               ErrorMessages.CategoryNameExists,
+               ErrorMessages.CategoryNameExists,
+               HttpStatusCode.Conflict
+           )!;
+
             }
 
             ExpenseCategory category = new ExpenseCategory
@@ -147,26 +175,35 @@ public class ExpenseCategoriesService : IExpenseCategoriesService
 
             _logger.LogInformation("Expense category created successfully with ID: {CategoryId}", category);
 
-            return new Response<object>
-            {
-                Message = SuccessMessages.Created,
-                Succeeded = true,
-                StatusCode = (int)HttpStatusCode.Created,
-                Data = category
-            };
+            // return new Response<object>
+            // {
+            //     Message = SuccessMessages.Created,
+            //     Succeeded = true,
+            //     StatusCode = (int)HttpStatusCode.Created,
+            //     Data = category
+            // };
+
+            return ResponseHelper.Success<object>(category, SuccessMessages.Created, HttpStatusCode.Created);
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "An exception occurred while creating expense category: {CategoryName}", expenseCategoryDto.Name);
 
-            return new Response<object>
-            {
-                Message = ErrorMessages.InternalServerError,
-                Succeeded = false,
-                StatusCode = (int)HttpStatusCode.InternalServerError,
-                Data = null,
-                Errors = new[] { ex.Message }
-            };
+            // return new Response<object>
+            // {
+            //     Message = ErrorMessages.InternalServerError,
+            //     Succeeded = false,
+            //     StatusCode = (int)HttpStatusCode.InternalServerError,
+            //     Data = null,
+            //     Errors = new[] { ex.Message }
+            // };
+
+            return ResponseHelper.Error(
+         ErrorMessages.InternalServerError,
+         ex.Message,
+         HttpStatusCode.InternalServerError
+     )!;
+
         }
     }
 
@@ -182,14 +219,21 @@ public class ExpenseCategoriesService : IExpenseCategoriesService
             {
                 _logger.LogWarning("Category not found for update. ID: {CategoryId}", id);
 
-                return new Response<object>
-                {
-                    Message = ErrorMessages.CategoryNotFound,
-                    Succeeded = false,
-                    StatusCode = (int)HttpStatusCode.NotFound,
-                    Data = null,
-                    Errors = new[] { ErrorMessages.NotFound }
-                };
+                // return new Response<object>
+                // {
+                //     Message = ErrorMessages.CategoryNotFound,
+                //     Succeeded = false,
+                //     StatusCode = (int)HttpStatusCode.NotFound,
+                //     Data = null,
+                //     Errors = new[] { ErrorMessages.NotFound }
+                // };
+
+                return ResponseHelper.Error(
+                               ErrorMessages.CategoryNotFound,
+                               ErrorMessages.NotFound,
+                               HttpStatusCode.NotFound
+                           )!;
+
             }
 
             bool nameExists = await _expenseCategoryRepository.ExistsByNameExceptIdAsync(expenseCategoryDto.Name, id);
@@ -198,14 +242,21 @@ public class ExpenseCategoriesService : IExpenseCategoriesService
                 _logger.LogWarning("Category name already exists for another category. Name: {CategoryName}, ID: {CategoryId}",
                    expenseCategoryDto.Name, id);
 
-                return new Response<object>
-                {
-                    Message = ErrorMessages.CategoryNameExists,
-                    Succeeded = false,
-                    StatusCode = (int)HttpStatusCode.Conflict,
-                    Data = null,
-                    Errors = new[] { ErrorMessages.CategoryNameExists }
-                };
+                // return new Response<object>
+                // {
+                //     Message = ErrorMessages.CategoryNameExists,
+                //     Succeeded = false,
+                //     StatusCode = (int)HttpStatusCode.Conflict,
+                //     Data = null,
+                //     Errors = new[] { ErrorMessages.CategoryNameExists }
+                // };
+
+                return ResponseHelper.Error(
+                               ErrorMessages.CategoryNameExists,
+                               ErrorMessages.CategoryNameExists,
+                               HttpStatusCode.Conflict
+                           )!;
+
             }
 
             category.Name = expenseCategoryDto.Name;
@@ -216,26 +267,40 @@ public class ExpenseCategoriesService : IExpenseCategoriesService
 
             _logger.LogInformation("Category updated successfully. ID: {CategoryId}", id);
 
-            return new Response<object>
-            {
-                Message = SuccessMessages.Updated,
-                Succeeded = true,
-                StatusCode = (int)HttpStatusCode.OK,
-                Data = category
-            };
+            // return new Response<object>
+            // {
+            //     Message = SuccessMessages.Updated,
+            //     Succeeded = true,
+            //     StatusCode = (int)HttpStatusCode.OK,
+            //     Data = category
+            // };
+
+            return ResponseHelper.Success<object>(
+                      category,
+                      SuccessMessages.Updated,
+                      HttpStatusCode.OK
+                  );
+
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "An error occurred while updating category with ID: {CategoryId}", id);
 
-            return new Response<object>
-            {
-                Message = ErrorMessages.InternalServerError,
-                Succeeded = false,
-                StatusCode = (int)HttpStatusCode.InternalServerError,
-                Data = null,
-                Errors = new[] { ex.Message }
-            };
+            // return new Response<object>
+            // {
+            //     Message = ErrorMessages.InternalServerError,
+            //     Succeeded = false,
+            //     StatusCode = (int)HttpStatusCode.InternalServerError,
+            //     Data = null,
+            //     Errors = new[] { ex.Message }
+            // };
+
+            return ResponseHelper.Error(
+        ErrorMessages.InternalServerError,
+        ex.Message,
+        HttpStatusCode.InternalServerError
+    )!;
+
         }
     }
 
@@ -251,14 +316,21 @@ public class ExpenseCategoriesService : IExpenseCategoriesService
             {
                 _logger.LogWarning("Category not found for deletion. ID: {CategoryId}", id);
 
-                return new Response<object>
-                {
-                    Message = ErrorMessages.CategoryNotFound,
-                    Succeeded = false,
-                    StatusCode = (int)HttpStatusCode.NotFound,
-                    Data = null,
-                    Errors = new[] { ErrorMessages.NotFound }
-                };
+                // return new Response<object>
+                // {
+                //     Message = ErrorMessages.CategoryNotFound,
+                //     Succeeded = false,
+                //     StatusCode = (int)HttpStatusCode.NotFound,
+                //     Data = null,
+                //     Errors = new[] { ErrorMessages.NotFound }
+                // };
+
+                return ResponseHelper.Error(
+                               ErrorMessages.CategoryNotFound,
+                               ErrorMessages.NotFound,
+                               HttpStatusCode.NotFound
+                           )!;
+
             }
 
             _expenseCategoryRepository.Delete(category);
@@ -266,26 +338,40 @@ public class ExpenseCategoriesService : IExpenseCategoriesService
 
             _logger.LogInformation("Category deleted successfully. ID: {CategoryId}", id);
 
-            return new Response<object>
-            {
-                Message = SuccessMessages.CategoryDeleted,
-                Succeeded = true,
-                StatusCode = (int)HttpStatusCode.OK,
-                Data = null
-            };
+            // return new Response<object>
+            // {
+            //     Message = SuccessMessages.CategoryDeleted,
+            //     Succeeded = true,
+            //     StatusCode = (int)HttpStatusCode.OK,
+            //     Data = null
+            // };
+
+            return ResponseHelper.Success<object>(
+                      null,
+                      SuccessMessages.CategoryDeleted,
+                      HttpStatusCode.OK
+                  );
+
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "An error occurred while deleting category with ID: {CategoryId}", id);
 
-            return new Response<object>
-            {
-                Message = ErrorMessages.InternalServerError,
-                Succeeded = false,
-                StatusCode = (int)HttpStatusCode.InternalServerError,
-                Data = null,
-                Errors = new[] { ex.Message }
-            };
+            // return new Response<object>
+            // {
+            //     Message = ErrorMessages.InternalServerError,
+            //     Succeeded = false,
+            //     StatusCode = (int)HttpStatusCode.InternalServerError,
+            //     Data = null,
+            //     Errors = new[] { ex.Message }
+            // };
+
+            return ResponseHelper.Error(
+                     ErrorMessages.InternalServerError,
+                     ex.Message,
+                     HttpStatusCode.InternalServerError
+                 )!;
+
         }
     }
 

@@ -33,14 +33,21 @@ public class ExpensesService : IExpensesService
             {
                 _logger.LogWarning("Unauthorized access attempt: user not authenticated.");
 
-                return new Response<object>
-                {
-                    Message = ErrorMessages.UnauthorizedAccess,
-                    Succeeded = false,
-                    StatusCode = (int)HttpStatusCode.NotFound,
-                    Data = null,
-                    Errors = new[] { ErrorMessages.UserNotFound }
-                };
+                // return new Response<object>
+                // {
+                //     Message = ErrorMessages.UnauthorizedAccess,
+                //     Succeeded = false,
+                //     StatusCode = (int)HttpStatusCode.NotFound,
+                //     Data = null,
+                //     Errors = new[] { ErrorMessages.UserNotFound }
+                // };
+
+                return ResponseHelper.Error(
+                              ErrorMessages.UnauthorizedAccess,
+                              ErrorMessages.UserNotFound,
+                              HttpStatusCode.NotFound
+                          )!;
+
             }
 
             int userId = int.Parse(user.FindFirstValue(ClaimTypes.NameIdentifier) ?? "0");
@@ -49,14 +56,21 @@ public class ExpensesService : IExpensesService
             {
                 _logger.LogWarning("Invalid user ID extracted from claims.");
 
-                return new Response<object>
-                {
-                    Message = ErrorMessages.UnauthorizedAccess,
-                    Succeeded = false,
-                    StatusCode = (int)HttpStatusCode.NotFound,
-                    Data = null,
-                    Errors = new[] { ErrorMessages.UserNotFound }
-                };
+                // return new Response<object>
+                // {
+                //     Message = ErrorMessages.UnauthorizedAccess,
+                //     Succeeded = false,
+                //     StatusCode = (int)HttpStatusCode.NotFound,
+                //     Data = null,
+                //     Errors = new[] { ErrorMessages.UserNotFound }
+                // };
+
+                return ResponseHelper.Error(
+                              ErrorMessages.UnauthorizedAccess,
+                              ErrorMessages.UserNotFound,
+                              HttpStatusCode.NotFound
+                          )!;
+
             }
 
             _logger.LogInformation("User ID {UserId} authenticated. Fetching expenses...", userId);
@@ -81,26 +95,39 @@ public class ExpensesService : IExpensesService
 
             _logger.LogInformation("Fetched {Count} expenses for user ID {UserId}.", expenseDtos.Count, userId);
 
-            return new Response<object>
-            {
-                Message = SuccessMessages.ExpensesFetched,
-                Succeeded = true,
-                StatusCode = (int)HttpStatusCode.OK,
-                Data = expenseDtos
-            };
+            //     return new Response<object>
+            //     {
+            //         Message = SuccessMessages.ExpensesFetched,
+            //         Succeeded = true,
+            //         StatusCode = (int)HttpStatusCode.OK,
+            //         Data = expenseDtos
+            //     };
+
+
+            return ResponseHelper.Success<object>(
+               expenseDtos,
+               SuccessMessages.ExpensesFetched
+           );
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "An error occurred while fetching expenses for the user.");
 
-            return new Response<object>
-            {
-                Message = ErrorMessages.GetExpensesFailed,
-                Succeeded = false,
-                StatusCode = (int)HttpStatusCode.InternalServerError,
-                Data = null,
-                Errors = new[] { ex.Message }
-            };
+            // return new Response<object>
+            // {
+            //     Message = ErrorMessages.GetExpensesFailed,
+            //     Succeeded = false,
+            //     StatusCode = (int)HttpStatusCode.InternalServerError,
+            //     Data = null,
+            //     Errors = new[] { ex.Message }
+            // };
+
+            return ResponseHelper.Error(
+           ErrorMessages.GetExpensesFailed,
+           ex.Message,
+           HttpStatusCode.InternalServerError
+       )!;
+
         }
     }
 
@@ -114,14 +141,21 @@ public class ExpensesService : IExpensesService
             {
                 _logger.LogWarning("Unauthorized request for expense ID {ExpenseId}: user not authenticated.", id);
 
-                return new Response<object>
-                {
-                    Message = ErrorMessages.UnauthorizedAccess,
-                    Succeeded = false,
-                    StatusCode = (int)HttpStatusCode.NotFound,
-                    Data = null,
-                    Errors = new[] { ErrorMessages.UserNotFound }
-                };
+                // return new Response<object>
+                // {
+                //     Message = ErrorMessages.UnauthorizedAccess,
+                //     Succeeded = false,
+                //     StatusCode = (int)HttpStatusCode.NotFound,
+                //     Data = null,
+                //     Errors = new[] { ErrorMessages.UserNotFound }
+                // };
+
+                return ResponseHelper.Error(
+               ErrorMessages.UnauthorizedAccess,
+               ErrorMessages.UserNotFound,
+               HttpStatusCode.NotFound
+           )!;
+
             }
 
             int userId = int.Parse(user.FindFirstValue(ClaimTypes.NameIdentifier) ?? "0");
@@ -130,14 +164,21 @@ public class ExpensesService : IExpensesService
             {
                 _logger.LogWarning("Invalid user ID extracted while requesting expense ID {ExpenseId}.", id);
 
-                return new Response<object>
-                {
-                    Message = ErrorMessages.UnauthorizedAccess,
-                    Succeeded = false,
-                    StatusCode = (int)HttpStatusCode.NotFound,
-                    Data = null,
-                    Errors = new[] { ErrorMessages.UserNotFound }
-                };
+                // return new Response<object>
+                // {
+                //     Message = ErrorMessages.UnauthorizedAccess,
+                //     Succeeded = false,
+                //     StatusCode = (int)HttpStatusCode.NotFound,
+                //     Data = null,
+                //     Errors = new[] { ErrorMessages.UserNotFound }
+                // };
+
+                return ResponseHelper.Error(
+               ErrorMessages.UnauthorizedAccess,
+               ErrorMessages.UserNotFound,
+               HttpStatusCode.NotFound
+           )!;
+
             }
 
             _logger.LogInformation("Fetching expense ID {ExpenseId} for user ID {UserId}.", id, userId);
@@ -148,13 +189,20 @@ public class ExpensesService : IExpensesService
             {
                 _logger.LogWarning("Expense not found or doesn't belong to user. Expense ID: {ExpenseId}, User ID: {UserId}", id, userId);
 
-                return new Response<object>
-                {
-                    Message = ErrorMessages.ExpenseNotFound,
-                    Succeeded = false,
-                    StatusCode = (int)HttpStatusCode.NotFound,
-                    Data = null
-                };
+                // return new Response<object>
+                // {
+                //     Message = ErrorMessages.ExpenseNotFound,
+                //     Succeeded = false,
+                //     StatusCode = (int)HttpStatusCode.NotFound,
+                //     Data = null
+                // };
+
+                return ResponseHelper.Error(
+               ErrorMessages.ExpenseNotFound,
+               ErrorMessages.ExpenseNotFound,
+               HttpStatusCode.NotFound
+           )!;
+
             }
 
             ExpenseCategory? expenseCategory = await _expenseCategoryRepository.GetByIdAsync(expense.CategoryId ?? 0);
@@ -170,26 +218,40 @@ public class ExpensesService : IExpensesService
 
             _logger.LogInformation("Expense ID {ExpenseId} successfully fetched for user ID {UserId}.", id, userId);
 
-            return new Response<object>
-            {
-                Message = SuccessMessages.ExpensesFetched,
-                Succeeded = true,
-                StatusCode = (int)HttpStatusCode.OK,
-                Data = dto
-            };
+            // return new Response<object>
+            // {
+            //     Message = SuccessMessages.ExpensesFetched,
+            //     Succeeded = true,
+            //     StatusCode = (int)HttpStatusCode.OK,
+            //     Data = dto
+            // };
+
+            return ResponseHelper.Success<object>(
+          dto,
+          SuccessMessages.ExpensesFetched,
+          HttpStatusCode.OK
+      );
+
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "An error occurred while fetching expense with ID: {ExpenseId}", id);
 
-            return new Response<object>
-            {
-                Message = ErrorMessages.GetExpensesFailed,
-                Succeeded = false,
-                StatusCode = (int)HttpStatusCode.InternalServerError,
-                Data = null,
-                Errors = new[] { ex.Message }
-            };
+            // return new Response<object>
+            // {
+            //     Message = ErrorMessages.GetExpensesFailed,
+            //     Succeeded = false,
+            //     StatusCode = (int)HttpStatusCode.InternalServerError,
+            //     Data = null,
+            //     Errors = new[] { ex.Message }
+            // };
+
+            return ResponseHelper.Error(
+            ErrorMessages.GetExpensesFailed,
+            ex.Message,
+            HttpStatusCode.InternalServerError
+        )!;
+
         }
     }
 
@@ -203,14 +265,21 @@ public class ExpensesService : IExpensesService
             {
                 _logger.LogWarning("Unauthorized request to create expense. User not authenticated.");
 
-                return new Response<object>
-                {
-                    Message = ErrorMessages.UnauthorizedAccess,
-                    Succeeded = false,
-                    StatusCode = (int)HttpStatusCode.NotFound,
-                    Data = null,
-                    Errors = new[] { ErrorMessages.UserNotFound }
-                };
+                // return new Response<object>
+                // {
+                //     Message = ErrorMessages.UnauthorizedAccess,
+                //     Succeeded = false,
+                //     StatusCode = (int)HttpStatusCode.NotFound,
+                //     Data = null,
+                //     Errors = new[] { ErrorMessages.UserNotFound }
+                // };
+
+                return ResponseHelper.Error(
+              ErrorMessages.UnauthorizedAccess,
+              ErrorMessages.UserNotFound,
+              HttpStatusCode.NotFound
+          )!;
+
             }
 
             int userId = int.Parse(user.FindFirstValue(ClaimTypes.NameIdentifier) ?? "0");
@@ -219,26 +288,40 @@ public class ExpensesService : IExpensesService
             {
                 _logger.LogWarning("Invalid user ID while creating expense.");
 
-                return new Response<object>
-                {
-                    Message = ErrorMessages.UnauthorizedAccess,
-                    Succeeded = false,
-                    StatusCode = (int)HttpStatusCode.NotFound,
-                    Data = null,
-                    Errors = new[] { ErrorMessages.UserNotFound }
-                };
+                // return new Response<object>
+                // {
+                //     Message = ErrorMessages.UnauthorizedAccess,
+                //     Succeeded = false,
+                //     StatusCode = (int)HttpStatusCode.NotFound,
+                //     Data = null,
+                //     Errors = new[] { ErrorMessages.UserNotFound }
+                // };
+
+                return ResponseHelper.Error(
+               ErrorMessages.UnauthorizedAccess,
+               ErrorMessages.UserNotFound,
+               HttpStatusCode.NotFound
+           )!;
+
             }
 
             if (!await _expenseCategoryRepository.ExistsByNameAsync(expenseDto.Category ?? ""))
             {
                 _logger.LogWarning("Attempted to create expense with invalid category: {Category}", expenseDto.Category);
 
-                return new Response<object>
-                {
-                    Succeeded = false,
-                    StatusCode = (int)HttpStatusCode.BadRequest,
-                    Errors = new[] { ErrorMessages.InvalidCategory }
-                };
+                // return new Response<object>
+                // {
+                //     Succeeded = false,
+                //     StatusCode = (int)HttpStatusCode.BadRequest,
+                //     Errors = new[] { ErrorMessages.InvalidCategory }
+                // };
+
+                return ResponseHelper.Error(
+              ErrorMessages.InvalidCategory,
+              ErrorMessages.InvalidCategory,
+              HttpStatusCode.BadRequest
+          )!;
+
             }
 
             ExpenseCategory category = await _expenseCategoryRepository.GetCategoryByNameAsync(expenseDto.Category ?? "");
@@ -268,26 +351,40 @@ public class ExpensesService : IExpensesService
                 Note = expense.Note
             };
 
-            return new Response<object>
-            {
-                Message = SuccessMessages.ExpenseCreated,
-                Succeeded = true,
-                StatusCode = (int)HttpStatusCode.OK,
-                Data = createdDto
-            };
+            // return new Response<object>
+            // {
+            //     Message = SuccessMessages.ExpenseCreated,
+            //     Succeeded = true,
+            //     StatusCode = (int)HttpStatusCode.OK,
+            //     Data = createdDto
+            // };
+
+            return ResponseHelper.Success<object>(
+         createdDto,
+         SuccessMessages.ExpenseCreated,
+         HttpStatusCode.OK
+     );
+
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "An error occurred while creating an expense.");
 
-            return new Response<object>
-            {
-                Message = ErrorMessages.CreateExpenseFailed,
-                Succeeded = false,
-                StatusCode = (int)HttpStatusCode.InternalServerError,
-                Data = null,
-                Errors = new[] { ex.Message }
-            };
+            // return new Response<object>
+            // {
+            //     Message = ErrorMessages.CreateExpenseFailed,
+            //     Succeeded = false,
+            //     StatusCode = (int)HttpStatusCode.InternalServerError,
+            //     Data = null,
+            //     Errors = new[] { ex.Message }
+            // };
+
+            return ResponseHelper.Error(
+         ErrorMessages.CreateExpenseFailed,
+         ex.Message,
+         HttpStatusCode.InternalServerError
+     )!;
+
         }
     }
 
@@ -301,14 +398,21 @@ public class ExpensesService : IExpensesService
             {
                 _logger.LogWarning("Unauthorized update attempt for expense ID {ExpenseId}. User not authenticated.", id);
 
-                return new Response<object>
-                {
-                    Message = ErrorMessages.UnauthorizedAccess,
-                    Succeeded = false,
-                    StatusCode = (int)HttpStatusCode.NotFound,
-                    Data = null,
-                    Errors = new[] { ErrorMessages.UserNotFound }
-                };
+                // return new Response<object>
+                // {
+                //     Message = ErrorMessages.UnauthorizedAccess,
+                //     Succeeded = false,
+                //     StatusCode = (int)HttpStatusCode.NotFound,
+                //     Data = null,
+                //     Errors = new[] { ErrorMessages.UserNotFound }
+                // };
+
+                return ResponseHelper.Error(
+              ErrorMessages.UnauthorizedAccess,
+              ErrorMessages.UserNotFound,
+              HttpStatusCode.NotFound
+          )!;
+
             }
 
             int userId = int.Parse(user.FindFirstValue(ClaimTypes.NameIdentifier) ?? "0");
@@ -317,14 +421,21 @@ public class ExpensesService : IExpensesService
             {
                 _logger.LogWarning("Invalid user ID while updating expense ID {ExpenseId}.", id);
 
-                return new Response<object>
-                {
-                    Message = ErrorMessages.UnauthorizedAccess,
-                    Succeeded = false,
-                    StatusCode = (int)HttpStatusCode.NotFound,
-                    Data = null,
-                    Errors = new[] { ErrorMessages.UserNotFound }
-                };
+                // return new Response<object>
+                // {
+                //     Message = ErrorMessages.UnauthorizedAccess,
+                //     Succeeded = false,
+                //     StatusCode = (int)HttpStatusCode.NotFound,
+                //     Data = null,
+                //     Errors = new[] { ErrorMessages.UserNotFound }
+                // };
+
+                return ResponseHelper.Error(
+               ErrorMessages.UnauthorizedAccess,
+               ErrorMessages.UserNotFound,
+               HttpStatusCode.NotFound
+           )!;
+
             }
 
             Expense? expense = await _expenseRepository.GetByIdAsync(id);
@@ -333,24 +444,38 @@ public class ExpensesService : IExpensesService
             {
                 _logger.LogWarning("Expense not found or does not belong to the user. Expense ID: {ExpenseId}, User ID: {UserId}", id, userId);
 
-                return new Response<object>
-                {
-                    Succeeded = false,
-                    StatusCode = (int)HttpStatusCode.BadRequest,
-                    Errors = new[] { ErrorMessages.ExpenseNotFound }
-                };
+                // return new Response<object>
+                // {
+                //     Succeeded = false,
+                //     StatusCode = (int)HttpStatusCode.BadRequest,
+                //     Errors = new[] { ErrorMessages.ExpenseNotFound }
+                // };
+
+                return ResponseHelper.Error(
+                                ErrorMessages.ExpenseNotFound,
+                                ErrorMessages.ExpenseNotFound,
+                                HttpStatusCode.BadRequest
+                            )!;
+
             }
 
             if (!await _expenseCategoryRepository.ExistsByNameAsync(expenseDto.Category ?? ""))
             {
                 _logger.LogWarning("Invalid category '{Category}' for update of expense ID: {ExpenseId}", expenseDto.Category, id);
 
-                return new Response<object>
-                {
-                    Succeeded = false,
-                    StatusCode = (int)HttpStatusCode.BadRequest,
-                    Errors = new[] { ErrorMessages.InvalidCategory }
-                };
+                // return new Response<object>
+                // {
+                //     Succeeded = false,
+                //     StatusCode = (int)HttpStatusCode.BadRequest,
+                //     Errors = new[] { ErrorMessages.InvalidCategory }
+                // };
+
+                return ResponseHelper.Error(
+               ErrorMessages.InvalidCategory,
+               ErrorMessages.InvalidCategory,
+               HttpStatusCode.BadRequest
+           )!;
+
             }
 
             ExpenseCategory? category = await _expenseCategoryRepository.GetCategoryByNameAsync(expenseDto.Category ?? "");
@@ -375,26 +500,40 @@ public class ExpensesService : IExpensesService
                 Note = expense.Note
             };
 
-            return new Response<object>
-            {
-                Message = SuccessMessages.ExpenseUpdated,
-                Succeeded = true,
-                StatusCode = (int)HttpStatusCode.OK,
-                Data = updatedExpense
-            };
+            // return new Response<object>
+            // {
+            //     Message = SuccessMessages.ExpenseUpdated,
+            //     Succeeded = true,
+            //     StatusCode = (int)HttpStatusCode.OK,
+            //     Data = updatedExpense
+            // };
+
+            return ResponseHelper.Success<object>(
+          updatedExpense,
+          SuccessMessages.ExpenseUpdated,
+          HttpStatusCode.OK
+      );
+
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "An error occurred while updating expense ID: {ExpenseId}", id);
 
-            return new Response<object>
-            {
-                Message = ErrorMessages.UpdateExpenseFailed,
-                Succeeded = false,
-                StatusCode = (int)HttpStatusCode.InternalServerError,
-                Data = null,
-                Errors = new[] { ex.Message }
-            };
+            // return new Response<object>
+            // {
+            //     Message = ErrorMessages.UpdateExpenseFailed,
+            //     Succeeded = false,
+            //     StatusCode = (int)HttpStatusCode.InternalServerError,
+            //     Data = null,
+            //     Errors = new[] { ex.Message }
+            // };
+
+            return ResponseHelper.Error(
+          ErrorMessages.UpdateExpenseFailed,
+          ex.Message,
+          HttpStatusCode.InternalServerError
+      )!;
+
         }
     }
 
@@ -408,13 +547,20 @@ public class ExpensesService : IExpensesService
             {
                 _logger.LogWarning("Unauthorized delete attempt for expense ID {ExpenseId}. User not authenticated.", id);
 
-                return new Response<object>
-                {
-                    Message = ErrorMessages.UnauthorizedAccess,
-                    Succeeded = false,
-                    StatusCode = (int)HttpStatusCode.NotFound,
-                    Errors = new[] { ErrorMessages.UserNotFound }
-                };
+                // return new Response<object>
+                // {
+                //     Message = ErrorMessages.UnauthorizedAccess,
+                //     Succeeded = false,
+                //     StatusCode = (int)HttpStatusCode.NotFound,
+                //     Errors = new[] { ErrorMessages.UserNotFound }
+                // };
+
+                return ResponseHelper.Error(
+              ErrorMessages.UnauthorizedAccess,
+              ErrorMessages.UserNotFound,
+              HttpStatusCode.NotFound
+          )!;
+
             }
 
             int userId = int.Parse(user.FindFirstValue(ClaimTypes.NameIdentifier) ?? "0");
@@ -422,13 +568,20 @@ public class ExpensesService : IExpensesService
             {
                 _logger.LogWarning("Invalid user ID during delete attempt. Expense ID: {ExpenseId}", id);
 
-                return new Response<object>
-                {
-                    Message = ErrorMessages.UnauthorizedAccess,
-                    Succeeded = false,
-                    StatusCode = (int)HttpStatusCode.NotFound,
-                    Errors = new[] { ErrorMessages.UserNotFound }
-                };
+                // return new Response<object>
+                // {
+                //     Message = ErrorMessages.UnauthorizedAccess,
+                //     Succeeded = false,
+                //     StatusCode = (int)HttpStatusCode.NotFound,
+                //     Errors = new[] { ErrorMessages.UserNotFound }
+                // };
+
+                return ResponseHelper.Error(
+              ErrorMessages.UnauthorizedAccess,
+              ErrorMessages.UserNotFound,
+              HttpStatusCode.NotFound
+          )!;
+
             }
 
             Expense? expense = await _expenseRepository.GetByIdAsync(id);
@@ -437,13 +590,20 @@ public class ExpensesService : IExpensesService
             {
                 _logger.LogWarning("Expense not found or does not belong to user. Expense ID: {ExpenseId}, User ID: {UserId}", id, userId);
 
-                return new Response<object>
-                {
-                    Message = ErrorMessages.ExpenseNotFound,
-                    Succeeded = false,
-                    StatusCode = (int)HttpStatusCode.NotFound,
-                    Errors = new[] { ErrorMessages.ExpenseNotFound }
-                };
+                // return new Response<object>
+                // {
+                //     Message = ErrorMessages.ExpenseNotFound,
+                //     Succeeded = false,
+                //     StatusCode = (int)HttpStatusCode.NotFound,
+                //     Errors = new[] { ErrorMessages.ExpenseNotFound }
+                // };
+
+                return ResponseHelper.Error(
+             ErrorMessages.ExpenseNotFound,
+             ErrorMessages.ExpenseNotFound,
+             HttpStatusCode.NotFound
+         )!;
+
             }
 
             _expenseRepository.Delete(expense);
@@ -451,24 +611,38 @@ public class ExpensesService : IExpensesService
 
             _logger.LogInformation("Expense ID {ExpenseId} deleted successfully by user ID {UserId}.", id, userId);
 
-            return new Response<object>
-            {
-                Message = SuccessMessages.ExpenseDeleted,
-                Succeeded = true,
-                StatusCode = (int)HttpStatusCode.OK
-            };
+            // return new Response<object>
+            // {
+            //     Message = SuccessMessages.ExpenseDeleted,
+            //     Succeeded = true,
+            //     StatusCode = (int)HttpStatusCode.OK
+            // };
+
+            return ResponseHelper.Success<object>(
+            null,
+            SuccessMessages.ExpenseDeleted,
+            HttpStatusCode.OK
+        );
+
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "An error occurred while deleting expense ID: {ExpenseId}", id);
 
-            return new Response<object>
-            {
-                Message = ErrorMessages.DeleteExpenseFailed,
-                Succeeded = false,
-                StatusCode = (int)HttpStatusCode.InternalServerError,
-                Errors = new[] { ex.Message }
-            };
+            // return new Response<object>
+            // {
+            //     Message = ErrorMessages.DeleteExpenseFailed,
+            //     Succeeded = false,
+            //     StatusCode = (int)HttpStatusCode.InternalServerError,
+            //     Errors = new[] { ex.Message }
+            // };
+
+            return ResponseHelper.Error(
+          ErrorMessages.DeleteExpenseFailed,
+          ex.Message,
+          HttpStatusCode.InternalServerError
+      )!;
+
         }
     }
 
@@ -520,13 +694,16 @@ public class ExpensesService : IExpensesService
 
             _logger.LogInformation("Fetched {Count} expenses. {MissingCount} usernames not found.", expenseDetailsDto.Count, notFoundUsernames.Count);
 
-            return new Response<FilteredExpenseReportDto>
-            {
-                Message = SuccessMessages.ExpensesFetched,
-                Succeeded = true,
-                StatusCode = (int)HttpStatusCode.OK,
-                Data = data
-            };
+            // return new Response<FilteredExpenseReportDto>
+            // {
+            //     Message = SuccessMessages.ExpensesFetched,
+            //     Succeeded = true,
+            //     StatusCode = (int)HttpStatusCode.OK,
+            //     Data = data
+            // };
+
+            return ResponseHelper.Success(data, SuccessMessages.ExpensesFetched, HttpStatusCode.OK);
+
         }
         catch (Exception ex)
         {
@@ -539,6 +716,7 @@ public class ExpensesService : IExpensesService
                 StatusCode = (int)HttpStatusCode.InternalServerError,
                 Errors = new[] { ex.Message }
             };
+
         }
     }
 

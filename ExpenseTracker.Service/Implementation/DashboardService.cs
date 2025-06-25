@@ -127,24 +127,23 @@ public class DashboardService : IDashboardService
             _logger.LogInformation("Expense summary generated successfully. Category count: {CategoryCount}, Grand total: {GrandTotal}",
               groupedByCategory.Count, grandTotal);
 
-            return new Response<object?>
-            {
-                Message = SuccessMessages.SummaryDataFetched,
-                StatusCode = (int)HttpStatusCode.OK,
-                Succeeded = true,
-                Data = summary
-            };
+            return ResponseHelper.Success<object?>(summary, SuccessMessages.SummaryDataFetched);
+
+
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "An error occurred while generating the expense summary.");
-            return new Response<object?>
-            {
-                Message = ErrorMessages.GetSummaryFailed,
-                Succeeded = false,
-                StatusCode = (int)HttpStatusCode.BadRequest,
-                Errors = new[] { ex.Message }
-            };
+            // return new Response<object?>
+            // {
+            //     Message = ErrorMessages.GetSummaryFailed,
+            //     Succeeded = false,
+            //     StatusCode = (int)HttpStatusCode.BadRequest,
+            //     Errors = new[] { ex.Message }
+            // };
+
+            return ResponseHelper.Error(ErrorMessages.GetSummaryFailed, ex.Message, HttpStatusCode.BadRequest);
+
         }
     }
 
@@ -152,12 +151,15 @@ public class DashboardService : IDashboardService
     {
         _logger.LogWarning("BadRequest returned: {ErrorMessage}", errorMessage);
 
-        return new Response<object?>
-        {
-            Succeeded = false,
-            StatusCode = (int)HttpStatusCode.BadRequest,
-            Errors = new[] { errorMessage }
-        };
+        // return new Response<object?>
+        // {
+        //     Succeeded = false,
+        //     StatusCode = (int)HttpStatusCode.BadRequest,
+        //     Errors = new[] { errorMessage }
+        // };
+
+        return ResponseHelper.Error(errorMessage, HttpStatusCode.BadRequest);
+
     }
 
     public Response<object?> ExportExpensesToCsv(CsvExportFilterRequestDto dto, ClaimsPrincipal user)
@@ -170,26 +172,30 @@ public class DashboardService : IDashboardService
             {
                 _logger.LogWarning("CSV export failed: User is not authenticated.");
 
-                return new Response<object?>
-                {
-                    Message = ErrorMessages.UnauthorizedAccess,
-                    Succeeded = false,
-                    StatusCode = (int)HttpStatusCode.NotFound,
-                    Errors = new[] { ErrorMessages.UserNotFound }
-                };
+                return ResponseHelper.Error(
+                    ErrorMessages.UnauthorizedAccess,
+                    ErrorMessages.UserNotFound,
+                    HttpStatusCode.NotFound
+                );
             }
 
             int userId = int.TryParse(user.FindFirstValue(ClaimTypes.NameIdentifier), out var id) ? id : 0;
             if (userId == 0)
             {
                 _logger.LogWarning("CSV export failed: Invalid or missing user ID.");
-                return new Response<object?>
-                {
-                    Message = ErrorMessages.UnauthorizedAccess,
-                    Succeeded = false,
-                    StatusCode = (int)HttpStatusCode.NotFound,
-                    Errors = new[] { ErrorMessages.UserNotFound }
-                };
+                // return new Response<object?>
+                // {
+                //     Message = ErrorMessages.UnauthorizedAccess,
+                //     Succeeded = false,
+                //     StatusCode = (int)HttpStatusCode.NotFound,
+                //     Errors = new[] { ErrorMessages.UserNotFound }
+                // };
+
+                return ResponseHelper.Error(
+                    ErrorMessages.UnauthorizedAccess,
+                    new[] { ErrorMessages.UserNotFound },
+                    HttpStatusCode.NotFound
+                );
             }
 
             _logger.LogInformation("Validating report filters for userId: {UserId}", userId);
@@ -294,25 +300,31 @@ public class DashboardService : IDashboardService
 
             _logger.LogInformation("CSV export successful for userId: {UserId}. Total: {TotalAmount}", userId, grandTotal);
 
-            return new Response<object?>
-            {
-                Message = SuccessMessages.CsvExportSuccessful,
-                StatusCode = (int)HttpStatusCode.OK,
-                Succeeded = true,
-                Data = stream
-            };
+            // return new Response<object?>
+            // {
+            //     Message = SuccessMessages.CsvExportSuccessful,
+            //     StatusCode = (int)HttpStatusCode.OK,
+            //     Succeeded = true,
+            //     Data = stream
+            // };
+
+            return ResponseHelper.Success<object?>(stream, SuccessMessages.CsvExportSuccessful);
+
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "An exception occurred while exporting expenses to CSV.");
-            
-            return new Response<object?>
-            {
-                Message = ErrorMessages.ExportCsvFailed,
-                StatusCode = (int)HttpStatusCode.BadRequest,
-                Succeeded = false,
-                Errors = new[] { ex.Message }
-            };
+
+            // return new Response<object?>
+            // {
+            //     Message = ErrorMessages.ExportCsvFailed,
+            //     StatusCode = (int)HttpStatusCode.BadRequest,
+            //     Succeeded = false,
+            //     Errors = new[] { ex.Message }
+            // };
+
+            return ResponseHelper.Error(ErrorMessages.ExportCsvFailed, ex.Message, HttpStatusCode.BadRequest);
+
         }
 
         Response<object?> Error(string message) => new()
